@@ -214,7 +214,7 @@ def process_video_inner(image_1, image_2, prompt, seed=123, steps=25, cfg_scale=
 
 
 @torch.inference_mode()
-@spaces.GPU
+@spaces.GPU(duration=120)
 def process_video(keyframes, prompt, steps, cfg, fps, seed, progress=gr.Progress()):
     result_frames = []
     cropped_images = []
