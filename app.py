@@ -111,13 +111,14 @@ def resize_without_crop(image, target_width, target_height):
 
 
 @torch.inference_mode()
-@spaces.GPU
+@spaces.GPU(duration=1200)
 def interrogator_process(x):
-    return wd14tagger.default_interrogator(x)
+    image_description = wd14tagger.default_interrogator(x)
+    return image_description, image_description
 
 
 @torch.inference_mode()
-@spaces.GPU
+@spaces.GPU(duration=1200)
 def process(input_fg, prompt, input_undo_steps, image_width, image_height, seed, steps, n_prompt, cfg,
             progress=gr.Progress()):
     rng = torch.Generator(device=memory_management.gpu).manual_seed(int(seed))
@@ -214,7 +215,7 @@ def process_video_inner(image_1, image_2, prompt, seed=123, steps=25, cfg_scale=
 
 
 @torch.inference_mode()
-@spaces.GPU(duration=120)
+@spaces.GPU(duration=1200)
 def process_video(keyframes, prompt, steps, cfg, fps, seed, progress=gr.Progress()):
     result_frames = []
     cropped_images = []
@@ -292,7 +293,7 @@ with block:
     prompt_gen_button.click(
         fn=interrogator_process,
         inputs=[input_fg],
-        outputs=[prompt]
+        outputs=[prompt, i2v_input_text]
     ).then(lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=False)],
            outputs=[prompt_gen_button, key_gen_button, i2v_end_btn])
 
